@@ -9,9 +9,33 @@ import {
 import { PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { InvoiceTable } from "./components/InvoiceTable";
+import prisma from "@/lib/prisma";
+import { requireUser } from "@/app/utils/requireUser";
 
+const getInvoices = async (userId) => {
+  const invoices = await prisma.invoice.findMany({
+    where: {
+      userId: userId,
+    },
+    select: {
+      id: true,
+      invoiceNumber: true,
+      clientName: true,
+      total: true,
+      status: true,
+      date: true,
+    },
+  });
 
-export default function InvoicePage() {
+  // Compute the amount by multiplying rate and quantity
+ 
+
+  return invoices;
+};
+
+export default async function  InvoicePage() {
+  const session = await requireUser();
+  const invoices = await getInvoices(session?.user?.id);
   return (
     <Card>
       <CardHeader>
@@ -33,7 +57,7 @@ export default function InvoicePage() {
         </div>
       </CardHeader>
       <CardContent>
-      <InvoiceTable/>
+      <InvoiceTable invoices={invoices} />
       </CardContent>
     </Card>
   );

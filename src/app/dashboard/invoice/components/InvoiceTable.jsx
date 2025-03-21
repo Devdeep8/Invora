@@ -15,27 +15,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Eye, CheckCircle, Bell, Edit, Trash } from "lucide-react";
 
-export function InvoiceTable() {
-  // Sample invoice data, amounts in INR.
-  const invoices = [
-    {
-      id: "INV-001",
-      customer: "John Doe",
-      amount: 100.0,
-      status: "Paid",
-      date: "2023-09-01",
-    },
-    {
-      id: "INV-002",
-      customer: "Jane Smith",
-      amount: 200.0,
-      status: "Pending",
-      date: "2023-09-02",
-    },
-  ];
-
+export function InvoiceTable({ invoices }) {
   return (
     <Table>
       <TableHeader>
@@ -51,13 +33,13 @@ export function InvoiceTable() {
       <TableBody>
         {invoices.map((invoice) => (
           <TableRow key={invoice.id}>
-            <TableCell>{invoice.id}</TableCell>
-            <TableCell>{invoice.customer}</TableCell>
             <TableCell>
-              ₹{invoice.amount.toFixed(2)}
+              {invoice.id.slice(0, 8) + "..." + invoice.id.slice(-4)}
             </TableCell>
+            <TableCell>{invoice.clientName}</TableCell>
+            <TableCell>₹{invoice.total.toFixed(2)}</TableCell>
             <TableCell>{invoice.status}</TableCell>
-            <TableCell>{invoice.date}</TableCell>
+            <TableCell>{new Date(invoice.date).toLocaleString()}</TableCell>
             <TableCell>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -67,19 +49,24 @@ export function InvoiceTable() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => console.log(`View ${invoice.id}`)}>
-                    View
+                    <Eye className="mr-2 h-4 w-4" />
+                    <span>View</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => console.log(`Mark as Paid ${invoice.id}`)}>
-                    Mark as Paid
+                    <CheckCircle className="mr-2 h-4 w-4" />
+                    <span>Mark as Paid</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => console.log(`Send Reminder for ${invoice.id}`)}>
-                    Reminder
+                    <Bell className="mr-2 h-4 w-4" />
+                    <span>Reminder</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => console.log(`Update ${invoice.id}`)}>
-                    Update
+                    <Edit className="mr-2 h-4 w-4" />
+                    <span>Update</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => console.log(`Delete ${invoice.id}`)}>
-                    Delete
+                    <Trash className="mr-2 h-4 w-4" />
+                    <span>Delete</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

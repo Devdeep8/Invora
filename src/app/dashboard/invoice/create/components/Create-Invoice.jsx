@@ -106,25 +106,34 @@ export function CreateInvoice({
             </div>
 
             <div>
-              <Label>Currency</Label>
-              <Select
-                defaultValue="USD"
-                name={fields.currency.name}
-                key={fields.currency.key}
-                onValueChange={(value) => setCurrency(value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Currency" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="USD">
-                    United States Dollar -- USD
-                  </SelectItem>
-                  <SelectItem value="EUR">Euro -- EUR</SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-red-500 text-sm">{fields.currency.errors}</p>
-            </div>
+  <Label>Currency</Label>
+  <Select
+    defaultValue="USD"
+    name={fields.currency.name}
+    key={fields.currency.key}
+    onValueChange={(value) => setCurrency(value)}
+  >
+    <SelectTrigger>
+      <SelectValue placeholder="Select Currency" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="USD">
+        United States Dollar -- USD
+      </SelectItem>
+      <SelectItem value="EUR">
+        Euro -- EUR
+      </SelectItem>
+      <SelectItem value="GBP">
+        British Pound Sterling -- GBP
+      </SelectItem>
+      <SelectItem value="INR">
+        Indian Rupee -- INR
+      </SelectItem>
+    </SelectContent>
+  </Select>
+  <p className="text-red-500 text-sm">{fields.currency.errors}</p>
+</div>
+
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 mb-6">
