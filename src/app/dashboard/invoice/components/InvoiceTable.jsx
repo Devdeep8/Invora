@@ -16,8 +16,10 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, Eye, CheckCircle, Bell, Edit, Trash } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export function InvoiceTable({ invoices }) {
+  const router = useRouter()
   return (
     <Table>
       <TableHeader>
@@ -48,7 +50,9 @@ export function InvoiceTable({ invoices }) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => console.log(`View ${invoice.id}`)}>
+                  <DropdownMenuItem onClick={() => 
+                    router.push(`/api/invoice/${invoice.id}`)
+                   }>
                     <Eye className="mr-2 h-4 w-4" />
                     <span>View</span>
                   </DropdownMenuItem>

@@ -5,7 +5,7 @@ import { requireUser } from "./utils/requireUser";
 import { parseWithZod } from "@conform-to/zod";
 import { invoiceSchema, OnboardingSchema } from "./utils/zodSchema";
 import { redirect } from "next/navigation";
-
+import nodemailer from "nodemailer"
 
 
 export async function OnboardUser(prevState, formData) {
@@ -75,6 +75,21 @@ export async function createInvoice(prevState, formData) {
       email: "hello@demomailtrap.com",
       name: "Jan Marshal",
     };
+
+
+    nodemailer.createTransport ({
+      host:process.env.EMAIL_SERVER_USER,
+      port:EMAIL_SERVER_PORT,
+      auth:{
+          user:EMAIL_SERVER_USER,
+          pass:EMAIL_SERVER_PASSWORD
+      }
+  })
+
+
+  
+
+
   
     // emailClient.send({
     //   from: sender,
