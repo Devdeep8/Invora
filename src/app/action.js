@@ -74,7 +74,7 @@ export async function createInvoice(prevState, formData) {
 
   // Define the sender using Invora's details
   const sender = {
-    email: "hello@invora.com", // updated sender email
+    email: process.env.EMAIL_SERVER_USER, // updated sender email
     name: "Invora", // updated sender name
   };
 
@@ -97,7 +97,7 @@ export async function createInvoice(prevState, formData) {
 
   // Build the email content
   const mailOptions = {
-    from: `${sender.name} <${sender.email}>`,
+    from: process.env.EMAIL_SERVER_USER,
     to: submission.value.clientEmail,
     subject: "Your Invoice is Pending - Let's Seal the Deal!",
     html: `
@@ -123,8 +123,9 @@ export async function createInvoice(prevState, formData) {
   };
 
   // Send the email
-  await transport.sendMail(mailOptions);
+  const info = await transport.sendMail(mailOptions);
 
+  console.log("Email sent:", info);
   // Redirect the user back to the invoice dashboard
   return redirect("/dashboard/invoice");
 }
