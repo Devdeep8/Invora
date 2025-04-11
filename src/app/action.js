@@ -6,6 +6,7 @@ import { parseWithZod } from "@conform-to/zod";
 import { invoiceSchema, OnboardingSchema } from "./utils/zodSchema";
 import { redirect } from "next/navigation";
 import nodemailer from "nodemailer"
+import { NextResponse } from "next/server";
 
 
 export async function OnboardUser(prevState, formData) {
@@ -137,5 +138,21 @@ export async function editInvoice(prevState, formData) {
 export async function DeleteInvoice(invoiceId) {
 }
 
-export async function MarkAsPaidAction(invoiceId) {
-}
+export async function MarkAsPaidAction(  invoiceId) {
+     
+  console.log(invoiceId)
+
+
+
+ const result = await prisma.invoice.update({
+    where:{
+      id:invoiceId
+    },
+    data:{
+      status:"PAID"
+    }
+  })
+
+  return result;
+
+} 

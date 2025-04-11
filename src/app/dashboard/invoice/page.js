@@ -36,7 +36,6 @@ const getInvoices = async (userId) => {
 export default async function  InvoicePage() {
   const session = await requireUser();
   const invoices = await getInvoices(session?.user?.id);
-  console.log(invoices);
   return (
     <Card>
       <CardHeader>
