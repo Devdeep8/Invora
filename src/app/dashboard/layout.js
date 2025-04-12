@@ -4,6 +4,7 @@ import { AppSidebar } from "./components/app-sidebar";
 import Header from "./components/Header";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import { Toaster } from "@/components/ui/sonner";
 
 
 async function getUser(userId) {
@@ -41,6 +42,7 @@ export default async function DashboardLayout({ children }) {
           </main>
         </div>
       </div>
-    </SidebarProvider>
+      <Toaster position="top-right"  expand={false} />
+      </SidebarProvider>
   );
 }

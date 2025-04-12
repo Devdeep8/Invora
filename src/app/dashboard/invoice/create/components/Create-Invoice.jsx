@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -20,7 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { CalendarIcon } from "lucide-react";
-import { useActionState, useState } from "react";
+import { useActionState } from "react";
 import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import SubmitBtn from "@/hooks/submitBtn";
@@ -28,31 +29,39 @@ import { createInvoice } from "@/app/action";
 import { invoiceSchema } from "@/app/utils/zodSchema";
 import { formatCurrency } from "@/app/utils/Format-Currency";
 
+function generateInvoiceNumber() {
+  // Generate a random six-digit number as a string. You can update the logic as needed.
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
 
-export function CreateInvoice({
-  address,
-  email,
-  firstName,
-  lastName,
-}) {
+export function CreateInvoice({ address, email, firstName, lastName }) {
   const [lastResult, action] = useActionState(createInvoice, undefined);
   const [form, fields] = useForm({
     lastResult,
-
     onValidate({ formData }) {
       return parseWithZod(formData, {
         schema: invoiceSchema,
       });
     },
-
     shouldValidate: "onBlur",
     shouldRevalidate: "onInput",
   });
 
+  // Automatically generate invoice number and invoice name on component mount.
+  const [autoInvoiceNumber, setAutoInvoiceNumber] = useState("");
+  const [autoInvoiceName, setAutoInvoiceName] = useState("");
+
+  useEffect(() => {
+    const number = generateInvoiceNumber();
+    setAutoInvoiceNumber(number);
+    setAutoInvoiceName(`Invoice #${number}`);
+  }, []);
+
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [rate, setRate] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [currency, setCurrency] = useState("USD");
+  // Set default currency to INR
+  const [currency, setCurrency] = useState("INR");
 
   const calcualteTotal = (Number(quantity) || 0) * (Number(rate) || 0);
 
@@ -65,7 +74,6 @@ export function CreateInvoice({
             name={fields.date.name}
             value={selectedDate.toISOString()}
           />
-
           <input
             type="hidden"
             name={fields.total.name}
@@ -78,8 +86,9 @@ export function CreateInvoice({
               <Input
                 name={fields.invoiceName.name}
                 key={fields.invoiceName.key}
-                defaultValue={fields.invoiceName.initialValue}
-                placeholder="Test 123"
+                // Use the auto-generated invoice name as default.
+                defaultValue={autoInvoiceName || fields.invoiceName.initialValue}
+                placeholder="Invoice Name"
               />
             </div>
             <p className="text-sm text-red-500">{fields.invoiceName.errors}</p>
@@ -95,9 +104,12 @@ export function CreateInvoice({
                 <Input
                   name={fields.invoiceNumber.name}
                   key={fields.invoiceNumber.key}
-                  defaultValue={fields.invoiceNumber.initialValue}
+                  // Use the auto-generated invoice number as the default value.
+                  defaultValue={autoInvoiceNumber || fields.invoiceNumber.initialValue}
                   className="rounded-l-none"
-                  placeholder="5"
+                  // Optionally, mark this as read-only if you do not wish the user to change it:
+                  readOnly
+                  placeholder="Auto Generated"
                 />
               </div>
               <p className="text-red-500 text-sm">
@@ -106,34 +118,32 @@ export function CreateInvoice({
             </div>
 
             <div>
-  <Label>Currency</Label>
-  <Select
-    defaultValue="USD"
-    name={fields.currency.name}
-    key={fields.currency.key}
-    onValueChange={(value) => setCurrency(value)}
-  >
-    <SelectTrigger>
-      <SelectValue placeholder="Select Currency" />
-    </SelectTrigger>
-    <SelectContent>
-      <SelectItem value="USD">
-        United States Dollar -- USD
-      </SelectItem>
-      <SelectItem value="EUR">
-        Euro -- EUR
-      </SelectItem>
-      <SelectItem value="GBP">
-        British Pound Sterling -- GBP
-      </SelectItem>
-      <SelectItem value="INR">
-        Indian Rupee -- INR
-      </SelectItem>
-    </SelectContent>
-  </Select>
-  <p className="text-red-500 text-sm">{fields.currency.errors}</p>
-</div>
-
+              <Label>Currency</Label>
+              <Select
+                // Set default value to "INR"
+                defaultValue="INR"
+                name={fields.currency.name}
+                key={fields.currency.key}
+                onValueChange={(value) => setCurrency(value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Currency" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="INR">Indian Rupee -- INR</SelectItem>
+                  <SelectItem value="USD">
+                    United States Dollar -- USD
+                  </SelectItem>
+                  <SelectItem value="EUR">
+                    Euro -- EUR
+                  </SelectItem>
+                  <SelectItem value="GBP">
+                    British Pound Sterling -- GBP
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-red-500 text-sm">{fields.currency.errors}</p>
+            </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 mb-6">
@@ -204,9 +214,7 @@ export function CreateInvoice({
 
           <div className="grid md:grid-cols-2 gap-6 mb-6">
             <div>
-              <div>
-                <Label>Date</Label>
-              </div>
+              <Label>Date</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -214,11 +222,8 @@ export function CreateInvoice({
                     className="w-[280px] text-left justify-start"
                   >
                     <CalendarIcon />
-
                     {selectedDate ? (
-                      new Intl.DateTimeFormat("en-US", {
-                        dateStyle: "long",
-                      }).format(selectedDate)
+                      new Intl.DateTimeFormat("en-US", { dateStyle: "long" }).format(selectedDate)
                     ) : (
                       <span>Pick a Date</span>
                     )}
@@ -247,7 +252,7 @@ export function CreateInvoice({
                   <SelectValue placeholder="Select due date" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="0">Due on Reciept</SelectItem>
+                  <SelectItem value="0">Due on Receipt</SelectItem>
                   <SelectItem value="15">Net 15</SelectItem>
                   <SelectItem value="30">Net 30</SelectItem>
                 </SelectContent>
@@ -330,7 +335,7 @@ export function CreateInvoice({
                 <span className="font-medium underline underline-offset-2">
                   {formatCurrency({
                     amount: calcualteTotal,
-                    currency: currency ,
+                    currency: currency,
                   })}
                 </span>
               </div>

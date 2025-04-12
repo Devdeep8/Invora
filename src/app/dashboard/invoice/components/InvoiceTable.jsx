@@ -17,11 +17,57 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, Eye, CheckCircle, Bell, Edit, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { MarkAsPaidAction } from "@/app/action";
+import { MarkAsPaidAction, ReminderOfInvoice } from "@/app/action";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 
 export function InvoiceTable({ invoices }) {
   const router = useRouter();
 
+  const handleReminder = async (invoice) => {
+    const invoiceId = invoice.id;
+    if (!invoiceId) {
+      console.error("Invoice ID is undefined");
+      return;
+    }
+  
+    // Validate and parse the issue date
+    const issueDate = new Date(invoice.date);
+    console.log(issueDate , "issue date")
+
+    if (isNaN(issueDate.getTime())) {
+      console.error("Invalid issue date:", invoice.date);
+      return;
+    }
+  
+    // Validate and parse dueDays
+    const dueDays = parseInt(invoice.dueDate, 10);
+    if (isNaN(dueDays)) {
+      console.error("Invalid dueDays:", invoice.dueDate);
+      return;
+    }
+
+    console.log(dueDays , "due days")
+  
+    // Calculate the due date
+    const dueDate = new Date(issueDate);
+    dueDate.setDate(issueDate.getDate() + dueDays);
+
+    console.log(dueDate , "due date");
+    
+  
+    // Normalize dates to midnight for accurate comparison
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    dueDate.setHours(0, 0, 0, 0);
+  
+    console.log(today , "today");
+    // Check if the invoice is due or overdue
+    if (today >= dueDate) {
+      await ReminderOfInvoice(invoiceId);
+    }
+  };
+  
   const handlePaid = async (invoice) => {
     const invoiceId = invoice.id;
 
@@ -29,11 +75,14 @@ export function InvoiceTable({ invoices }) {
       console.error("Invoice ID is undefined");
       return;
     }
+    console.log(invoice , "invoice")
+    console.log(invoice.status , "invoices status")
 
-    if (invoice.status === "paid") {
-      alert("This invoice has already been marked as paid.");
+    if (invoice.status === "PAID") {
+      toast.info("Invoice is already paid.");
       return;
     }
+
 
     console.log("Marking invoice with ID:", invoiceId);
     try {
@@ -76,7 +125,7 @@ export function InvoiceTable({ invoices }) {
               </TableCell>
               <TableCell>{invoice.clientName}</TableCell>
               <TableCell>₹{invoice.total.toFixed(2)}</TableCell>
-              <TableCell>{invoice.status}</TableCell>
+              <TableCell><Badge variant={invoice.status === 'PAID' ? 'sucess' : 'destructive'}>{invoice.status}</Badge></TableCell>
               <TableCell>{new Date(invoice.date).toLocaleString()}</TableCell>
               <TableCell>
                 <DropdownMenu>
@@ -93,8 +142,8 @@ export function InvoiceTable({ invoices }) {
                     <DropdownMenuItem onClick={() => handlePaid(invoice)}>
                       <CheckCircle className="mr-2 h-4 w-4" />
                       <span>Mark as Paid</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => console.log(`Send Reminder for ${invoice.id}`)}>
+                    </DropdownMenuItem> 
+                    <DropdownMenuItem onClick={() => handleReminder(invoice)}>
                       <Bell className="mr-2 h-4 w-4" />
                       <span>Reminder</span>
                     </DropdownMenuItem>

@@ -24,6 +24,7 @@ const getInvoices = async (userId) => {
       total: true,
       status: true,
       date: true,
+      dueDate: true,
     },
   });
 
