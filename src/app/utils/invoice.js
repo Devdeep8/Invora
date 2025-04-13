@@ -1,7 +1,7 @@
-import prisma from "@/lib/prisma";
-import { NextResponse } from "next/server";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
+
 
 // Currency formatter using Intl for INR
 const formatCurrency = (amount, currency = "INR") =>
@@ -11,48 +11,21 @@ const formatCurrency = (amount, currency = "INR") =>
     minimumFractionDigits: 2,
   }).format(amount);
 
-export async function GET(request, { params }) {
-  // Retrieve only the selected invoice fields.
-  const data = await prisma.invoice.findUnique({
-    where: { id: params.invoiceId },
-    select: {
-      invoiceName: true,
-      invoiceNumber: true,
-      currency: true,
-      fromName: true,
-      fromEmail: true,
-      fromAddress: true,
-      clientName: true,
-      clientAddress: true,
-      clientEmail: true,
-      date: true,
-      dueDate: true,
-      invoiceItemDescription: true,
-      invoiceItemQuantity: true,
-      invoiceItemRate: true,
-      total: true,
-      note: true,
-    },
+// Helper to format a date in a clear long style
+const formatDate = (dateString) => {
+  if (!dateString) return "";
+  return new Date(dateString).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
+};
 
-  if (!data) {
-    return new NextResponse(JSON.stringify({ error: "Invoice not found" }), { status: 404 });
-  }
-
-  // Helper to format a date in a clear long style.
-  const formatDate = (dateString) => {
-    if (!dateString) return "";
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
-  // Create a new PDF document (A4, portrait).
+export const generateInvoicePDF = (data) => {
+  // Create a new PDF document (A4, portrait)
   const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
 
-  // Define common layout values.
+  // Define common layout values
   const leftMargin = 20;
   const pageWidth = pdf.internal.pageSize.getWidth();
   let yPosition = 20;
@@ -60,20 +33,20 @@ export async function GET(request, { params }) {
   // -----------------------------
   // Header Section: Title & Metadata
   // -----------------------------
-  // Centered Invoice Title.
+  // Centered Invoice Title
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(26);
   pdf.text("INVOICE", pageWidth / 2, yPosition, { align: "center" });
   yPosition += 10;
 
-  // Invoice metadata: Invoice Number (left) and Issue Date (right).
+  // Invoice metadata: Invoice Number (left) and Issue Date (right)
   pdf.setFontSize(12);
   pdf.setFont("helvetica", "normal");
   pdf.text(`Invoice Number: ${data.invoiceNumber}`, leftMargin, yPosition);
   pdf.text(`Issue Date: ${formatDate(data.date)}`, pageWidth - leftMargin, yPosition, { align: "right" });
   yPosition += 10;
 
-  // Divider line for a clean look.
+  // Divider line for a clean look
   pdf.setLineWidth(0.5);
   pdf.line(leftMargin, yPosition, pageWidth - leftMargin, yPosition);
   yPosition += 5;
@@ -85,7 +58,7 @@ export async function GET(request, { params }) {
   const columnWidth = totalWidth / 2;
   let sectionY = yPosition;
 
-  // "PAY TO:" Section (sender details).
+  // "PAY TO:" Section (sender details)
   pdf.setFont("helvetica", "bold");
   pdf.text("PAY TO:", leftMargin, sectionY);
   sectionY += 5;
@@ -102,7 +75,7 @@ export async function GET(request, { params }) {
     sectionY += 4;
   }
 
-  // "BILLED TO:" Section (client details) on the right column.
+  // "BILLED TO:" Section (client details) on the right column
   let clientY = yPosition;
   const rightColumnX = leftMargin + columnWidth;
   pdf.setFont("helvetica", "bold");
@@ -121,21 +94,20 @@ export async function GET(request, { params }) {
     clientY += 4;
   }
 
-  // Set yPosition to the taller of the two columns, plus some spacing.
+  // Set yPosition to the taller of the two columns, plus some spacing
   yPosition = Math.max(sectionY, clientY) + 20;
 
   // -----------------------------
   // Invoice Items Table Section
   // -----------------------------
-  // Divider before the table.
+  // Divider before the table
   pdf.line(leftMargin, yPosition, pageWidth - leftMargin, yPosition);
   yPosition += 5;
 
-  // Calculate the amount for the single invoice item.
-  const itemAmount =
-    (Number(data.invoiceItemRate) || 0) * (Number(data.invoiceItemQuantity) || 0);
+  // Calculate the amount for the single invoice item
+  const itemAmount = (Number(data.invoiceItemRate) || 0) * (Number(data.invoiceItemQuantity) || 0);
 
-  // Build table rows using only the provided variables.
+  // Build table rows using only the provided variables
   const tableRows = [
     [
       data.invoiceItemDescription || "",
@@ -145,7 +117,7 @@ export async function GET(request, { params }) {
     ]
   ];
 
-  // Generate the table using autoTable.
+  // Generate the table using autoTable
   autoTable(pdf, {
     startY: yPosition,
     head: [["DESCRIPTION", "RATE", "QUANTITY", "AMOUNT"]],
@@ -208,7 +180,7 @@ export async function GET(request, { params }) {
   pdf.setFontSize(9);
   pdf.text("Thank you for your business!", leftMargin, 286);
 
-  // Add page numbers if the document spans multiple pages.
+  // Add page numbers if the document spans multiple pages
   const totalPages = pdf.internal.getNumberOfPages();
   for (let i = 1; i <= totalPages; i++) {
     pdf.setPage(i);
@@ -216,12 +188,6 @@ export async function GET(request, { params }) {
     pdf.text(`Page ${i} of ${totalPages}`, pageWidth - leftMargin, 290, { align: "right" });
   }
 
-  // Convert the PDF to a buffer and return it with appropriate headers.
-  const pdfBuffer = Buffer.from(pdf.output("arraybuffer"));
-  return new NextResponse(pdfBuffer, {
-    headers: {
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `inline; filename="Invoice-${data.invoiceNumber}.pdf"`,
-    },
-  });
-}
+  // Convert the PDF to a buffer and return it
+  return pdf.output('arraybuffer');
+};

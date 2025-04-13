@@ -1,7 +1,8 @@
-import { ThemeProvider } from "@/components/theme-provider";
+
 import "./globals.css";
 import { Providers } from "./utils/providers";
 import { auth } from "./utils/auth";
+import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata = {
   title: "Invora",
