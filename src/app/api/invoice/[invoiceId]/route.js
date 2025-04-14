@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
-// Currency formatter using Intl for INR
+
 const formatCurrency = (amount, currency = "INR") =>
   new Intl.NumberFormat("en-IN", {
     style: "currency",
@@ -12,9 +12,11 @@ const formatCurrency = (amount, currency = "INR") =>
   }).format(amount);
 
 export async function GET(request, { params }) {
+
+  const {invoiceId } = await params
   // Retrieve only the selected invoice fields.
   const data = await prisma.invoice.findUnique({
-    where: { id: params.invoiceId },
+    where: { id: invoiceId },
     select: {
       invoiceName: true,
       invoiceNumber: true,
@@ -131,19 +133,17 @@ export async function GET(request, { params }) {
   pdf.line(leftMargin, yPosition, pageWidth - leftMargin, yPosition);
   yPosition += 5;
 
-  // Calculate the amount for the single invoice item.
-  const itemAmount =
-    (Number(data.invoiceItemRate) || 0) * (Number(data.invoiceItemQuantity) || 0);
-
+  
   // Build table rows using only the provided variables.
   const tableRows = [
     [
       data.invoiceItemDescription || "",
-      formatCurrency(Number(data.invoiceItemRate), data.currency || "INR"),
+      `₹${Number(data.invoiceItemRate)}`,
       data.invoiceItemQuantity?.toString() || "",
-      formatCurrency(itemAmount, data.currency || "INR")
+      `₹${(Number(data.invoiceItemRate) * Number(data.invoiceItemQuantity))}`
     ]
   ];
+  
 
   // Generate the table using autoTable.
   autoTable(pdf, {
@@ -166,11 +166,12 @@ export async function GET(request, { params }) {
     },
     columnStyles: {
       0: { cellWidth: 80 },
-      1: { cellWidth: 35, halign: "right" },
-      2: { cellWidth: 20, halign: "center" },
-      3: { cellWidth: 35, halign: "right" }
+      1: { cellWidth: 30, halign: "center" },
+      2: { cellWidth: 30, halign: "center" },
+      3: { cellWidth: 35, halign: "center" }
     }
   });
+  
   let finalY = pdf.lastAutoTable.finalY + 10;
 
   // -----------------------------
@@ -218,6 +219,7 @@ export async function GET(request, { params }) {
 
   // Convert the PDF to a buffer and return it with appropriate headers.
   const pdfBuffer = Buffer.from(pdf.output("arraybuffer"));
+
   return new NextResponse(pdfBuffer, {
     headers: {
       "Content-Type": "application/pdf",
