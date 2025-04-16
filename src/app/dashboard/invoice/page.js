@@ -11,28 +11,7 @@ import Link from "next/link";
 import { InvoiceTable } from "./components/InvoiceTable";
 import prisma from "@/lib/prisma";
 import { requireUser } from "@/app/utils/requireUser";
-
-const getInvoices = async (userId) => {
-  const invoices = await prisma.invoice.findMany({
-    where: {
-      userId: userId,
-    },
-    select: {
-      id: true,
-      invoiceNumber: true,
-      clientName: true,
-      total: true,
-      status: true,
-      date: true,
-      dueDate: true,
-    },
-  });
-
-  // Compute the amount by multiplying rate and quantity
- 
-
-  return invoices;
-};
+import { getInvoices } from "@/app/action";
 
 export default async function  InvoicePage() {
   const session = await requireUser();

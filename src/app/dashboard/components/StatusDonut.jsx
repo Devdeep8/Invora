@@ -1,9 +1,17 @@
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
+'use client';
 
-
+import React from 'react';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Legend,
+  Tooltip,
+} from 'recharts';
 
 export function StatusDonut({ data }) {
-  const COLORS = ["#6366F1", "#10B981", "#F59E0B", "#EF4444"];
+  const COLORS = ['#6366F1', '#10B981', '#F59E0B', '#EF4444'];
 
   return (
     <div className="w-full h-[200px]">
@@ -22,12 +30,12 @@ export function StatusDonut({ data }) {
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>
-          <Tooltip 
+          <Tooltip
             formatter={(value, name) => [`${value}`, name]}
           />
-          <Legend 
-            layout="vertical" 
-            verticalAlign="middle" 
+          <Legend
+            layout="vertical"
+            verticalAlign="middle"
             align="right"
             iconType="circle"
           />

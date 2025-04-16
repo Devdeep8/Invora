@@ -6,7 +6,71 @@ import { parseWithZod } from "@conform-to/zod";
 import { invoiceSchema, OnboardingSchema } from "./utils/zodSchema";
 import { redirect } from "next/navigation";
 import nodemailer from "nodemailer"
+import { addMonths, format } from "date-fns";
 
+export const getRevenueData = async (userId) => {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const isBeforeApril = now.getMonth() < 3;
+  const fyStart = new Date(isBeforeApril ? currentYear - 1 : currentYear, 3, 1);
+  const fyEnd = addMonths(fyStart, 12);
+
+  // Get all PAID invoices in FY at once
+  const invoices = await prisma.invoice.findMany({
+    where: {
+      userId,
+      status: "PAID",
+      date: {
+        gte: fyStart,
+        lt: fyEnd,
+      },
+    },
+    select: {
+      date: true,
+      total: true,
+    },
+  });
+
+  // Build empty revenue map
+  const revenueMap = Array.from({ length: 12 }, (_, i) => {
+    const date = addMonths(fyStart, i);
+    return {
+      month: format(date, "MMM"),
+      amount: 0,
+    };
+  });
+
+  // Sum totals by month
+  invoices.forEach((invoice) => {
+    const monthIndex = invoice.date.getMonth() - 3; // April = 0
+    const index = monthIndex >= 0 ? monthIndex : monthIndex + 12;
+    revenueMap[index].amount += Number(invoice.total);
+  });
+
+  return revenueMap;
+};
+
+export const getInvoices = async (userId) => {
+  const invoices = await prisma.invoice.findMany({
+    where: {
+      userId: userId,
+    },
+    select: {
+      id: true,
+      invoiceNumber: true,
+      clientName: true,
+      total: true,
+      status: true,
+      date: true,
+      dueDate: true,
+    },
+  });
+
+  // Compute the amount by multiplying rate and quantity
+ 
+
+  return invoices;
+};
 
 export async function OnboardUser(prevState, formData) {
     const session = await requireUser()

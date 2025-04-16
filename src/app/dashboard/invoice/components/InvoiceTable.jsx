@@ -135,7 +135,7 @@ export function InvoiceTable({ invoices }) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => router.push(`/api/invoice/${invoice.id}`)}>
+                    <DropdownMenuItem onClick={() => router.push(`/dashboard/invoice/${invoice.id}`)}>
                       <Eye className="mr-2 h-4 w-4" />
                       <span>View</span>
                     </DropdownMenuItem>

@@ -1,34 +1,45 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+'use client';
+
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
+
 
 
 export function RevenueChart({ data }) {
+  const sanitizedData = data.map((item) => ({
+    ...item,
+    amount: item.amount ?? 0,
+  }));
+
   return (
     <div className="w-full h-[200px]">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
-          data={data}
-          margin={{
-            top: 5,
-            right: 10,
-            left: 10,
-            bottom: 5,
-          }}
+          data={sanitizedData}
+          margin={{ top: 5, right: 10, left: 10, bottom: 5 }}
         >
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
-          <XAxis 
-            dataKey="month" 
+          <XAxis
+            dataKey="month"
             axisLine={false}
             tickLine={false}
             tick={{ fontSize: 12 }}
           />
-          <YAxis 
+          <YAxis
             axisLine={false}
             tickLine={false}
             tick={{ fontSize: 12 }}
-            tickFormatter={(value) => `₹${value/1000}k`}
+            tickFormatter={(value) => `₹${value / 1000}k`}
           />
-          <Tooltip 
-            formatter={(value) => [`₹${Number(value).toLocaleString()}`, "Revenue"]}
+          <Tooltip
+            formatter={(value) => [`₹${Number(value).toLocaleString()}`, 'Revenue']}
             labelFormatter={(label) => `Month: ${label}`}
           />
           <Line
