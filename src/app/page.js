@@ -394,7 +394,7 @@ export default function Home() {
                       <Star key={i} className="h-5 w-5 text-yellow-500 fill-yellow-500" />
                     ))}
                   </div>
-                  <p className="text-xl text-gray-700 mb-6 italic">"{testimonials[activeTestimonial].quote}"</p>
+                  <p className="text-xl text-gray-700 mb-6 italic">{testimonials[activeTestimonial].quote}</p>
                   <div className="flex items-center">
                     <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-800 font-bold mr-4">
                       {testimonials[activeTestimonial].author.charAt(0)}
