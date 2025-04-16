@@ -374,7 +374,7 @@ export default function Home() {
             <Badge className="mb-4 bg-blue-100 text-blue-800 hover:bg-blue-200 px-3 py-1">Testimonials</Badge>
             <h2 className="text-4xl font-bold mb-4 text-gray-900">What Our Customers Say</h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Don't just take our word for it. Here's what our customers have to say about Invora.
+              Don:&apos;t just take our word for it. Here:&apos;s what our customers have to say about Invora.
             </p>
           </motion.div>
           
