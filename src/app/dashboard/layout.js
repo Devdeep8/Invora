@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { Toaster } from "@/components/ui/sonner";
 
 
+
 async function getUser(userId) {
   const data =  await prisma.user.findUnique({
     where:{
