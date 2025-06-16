@@ -15,90 +15,84 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Eye, CheckCircle, Bell, Edit, Trash } from "lucide-react";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  MoreHorizontal,
+  Eye,
+  CheckCircle,
+  Bell,
+  Edit,
+  Trash,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
-import { MarkAsPaidAction, ReminderOfInvoice } from "@/app/action";
+import { DeleteInvoice, MarkAsPaidAction, ReminderOfInvoice } from "@/app/action";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
 
 export function InvoiceTable({ invoices }) {
   const router = useRouter();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [invoiceToDelete, setInvoiceToDelete] = useState(null);
 
   const handleReminder = async (invoice) => {
     const invoiceId = invoice.id;
-    if (!invoiceId) {
-      console.error("Invoice ID is undefined");
-      return;
-    }
-  
-    // Validate and parse the issue date
+    if (!invoiceId) return;
+
     const issueDate = new Date(invoice.date);
-    console.log(issueDate , "issue date")
-
-    if (isNaN(issueDate.getTime())) {
-      console.error("Invalid issue date:", invoice.date);
-      return;
-    }
-  
-    // Validate and parse dueDays
     const dueDays = parseInt(invoice.dueDate, 10);
-    if (isNaN(dueDays)) {
-      console.error("Invalid dueDays:", invoice.dueDate);
-      return;
-    }
-
-    console.log(dueDays , "due days")
-  
-    // Calculate the due date
     const dueDate = new Date(issueDate);
     dueDate.setDate(issueDate.getDate() + dueDays);
 
-    console.log(dueDate , "due date");
-    
-  
-    // Normalize dates to midnight for accurate comparison
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     dueDate.setHours(0, 0, 0, 0);
-  
-    console.log(today , "today");
-    // Check if the invoice is due or overdue
+
     if (today >= dueDate) {
       await ReminderOfInvoice(invoiceId);
+      toast.success("Reminder sent successfully.");
+    } else {
+      toast.info("Invoice is not yet due.");
     }
   };
-  
+
   const handlePaid = async (invoice) => {
     const invoiceId = invoice.id;
-
-    if (!invoiceId) {
-      console.error("Invoice ID is undefined");
-      return;
-    }
-    console.log(invoice , "invoice")
-    console.log(invoice.status , "invoices status")
-
+    if (!invoiceId) return;
     if (invoice.status === "PAID") {
       toast.info("Invoice is already paid.");
       return;
     }
 
-
-    console.log("Marking invoice with ID:", invoiceId);
     try {
-      if (!invoiceId) {
-        console.error("Invoice ID is undefined");
-        return;
-      }
-
-      const result = await MarkAsPaidAction(invoiceId);
-      console.log("Invoice marked as paid:", result);
-      router.refresh()
-
-      // Optional: Refresh the UI if data comes from server components
-      // router.refresh();
+      await MarkAsPaidAction(invoiceId);
+      toast.success("Invoice marked as paid.");
+      router.refresh();
     } catch (err) {
       console.error("Error marking invoice as paid:", err);
+      toast.error("Failed to mark invoice as paid.");
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!invoiceToDelete?.id) return;
+
+    try {
+      await DeleteInvoice(invoiceToDelete.id);
+      toast.success("Invoice deleted.");
+      setDialogOpen(false);
+      setInvoiceToDelete(null);
+      router.refresh();
+    } catch (err) {
+      console.error("Error deleting invoice:", err);
+      toast.error("Failed to delete invoice.");
     }
   };
 
@@ -125,7 +119,11 @@ export function InvoiceTable({ invoices }) {
               </TableCell>
               <TableCell>{invoice.clientName}</TableCell>
               <TableCell>₹{invoice.total.toFixed(2)}</TableCell>
-              <TableCell><Badge variant={invoice.status === 'PAID' ? 'sucess' : 'destructive'}>{invoice.status}</Badge></TableCell>
+              <TableCell>
+                <Badge variant={invoice.status === "PAID" ? "success" : "destructive"}>
+                  {invoice.status}
+                </Badge>
+              </TableCell>
               <TableCell>{new Date(invoice.date).toLocaleString()}</TableCell>
               <TableCell>
                 <DropdownMenu>
@@ -135,14 +133,14 @@ export function InvoiceTable({ invoices }) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => router.push(`/dashboard/invoice/${invoice.id}`)}>
+                    <DropdownMenuItem onClick={() => router.push(`/api/invoice/${invoice.id}`)}>
                       <Eye className="mr-2 h-4 w-4" />
                       <span>View</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handlePaid(invoice)}>
                       <CheckCircle className="mr-2 h-4 w-4" />
                       <span>Mark as Paid</span>
-                    </DropdownMenuItem> 
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleReminder(invoice)}>
                       <Bell className="mr-2 h-4 w-4" />
                       <span>Reminder</span>
@@ -151,9 +149,14 @@ export function InvoiceTable({ invoices }) {
                       <Edit className="mr-2 h-4 w-4" />
                       <span>Update</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => console.log(`Delete ${invoice.id}`)}>
-                      <Trash className="mr-2 h-4 w-4" />
-                      <span>Delete</span>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setInvoiceToDelete(invoice);
+                        setDialogOpen(true);
+                      }}
+                    >
+                      <Trash className="mr-2 h-4 w-4 text-red-500" />
+                      <span className="text-red-500">Delete</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -162,6 +165,30 @@ export function InvoiceTable({ invoices }) {
           ))}
         </TableBody>
       </Table>
+
+      {/* Confirmation Dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Are you sure?</DialogTitle>
+            <p className="text-sm text-muted-foreground">
+              This action cannot be undone. This will permanently delete the invoice{" "}
+              <strong>
+                {invoiceToDelete?.id?.slice(0, 6)}...{invoiceToDelete?.id?.slice(-4)}
+              </strong>
+              .
+            </p>
+          </DialogHeader>
+          <DialogFooter className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDelete}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

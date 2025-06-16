@@ -194,6 +194,14 @@ export async function createInvoice(prevState, formData) {
 export async function editInvoice(prevState, formData) {
 }
 export async function DeleteInvoice(invoiceId) {
+
+  console.log(invoiceId)
+  const result = await prisma.invoice.delete({
+    where: {
+      id: invoiceId
+    }
+  })
+  return result
 }
 export async function MarkAsPaidAction(invoiceId) {
      

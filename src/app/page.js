@@ -111,7 +111,7 @@ export default function Home() {
                 <Button variant="ghost" className="text-blue-800">Features</Button>
                 <Button variant="ghost" className="text-blue-800">Pricing</Button>
                 <Button variant="ghost" className="text-blue-800">Testimonials</Button>
-                <Button className="bg-blue-800 hover:bg-blue-900 text-white">Get Started</Button>
+                <Button onClick={(e) => window.location.href="/login"} className="bg-blue-800 hover:bg-blue-900 text-white">Get Started</Button>
               </div>
             </div>
           </motion.nav>
