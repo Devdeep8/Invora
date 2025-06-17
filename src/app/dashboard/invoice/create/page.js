@@ -1,7 +1,6 @@
-import { redirect } from "next/navigation";
 import { CreateInvoice } from "./components/Create-Invoice";
 import prisma from "@/lib/prisma";
-import { requireUser } from "@/app/utils/requireUser";
+import { requireUser } from "@/utils/requireUser";
 
 
 async function getUserData(userId) {

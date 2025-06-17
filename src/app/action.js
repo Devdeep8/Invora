@@ -1,9 +1,9 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { requireUser } from "./utils/requireUser";
+import { requireUser } from "@/utils/requireUser";
 import { parseWithZod } from "@conform-to/zod";
-import { invoiceSchema, OnboardingSchema } from "./utils/zodSchema";
+import { invoiceSchema, OnboardingSchema } from "@/utils/zodSchema";
 import { redirect } from "next/navigation";
 import nodemailer from "nodemailer";
 import { addMonths, format } from "date-fns";
@@ -200,22 +200,71 @@ export async function editInvoice(prevState, formData) {
   }
 
   try {
-    const updateInvoice = parseWithZod(formData, {
-    schema: invoiceSchema,
-  });
+    // Parse the form data with Zod validation
+    const result = parseWithZod(formData, {
+      schema: invoiceSchema,
+    });
 
-  const updatedInvoice = await prisma.invoice.updateMany({
-    where: {
-      id: formData.id,
-    },
-    data: updateInvoice,  
-  })
-  return {success : true  , updatedInvoice}
+    if (result.status !== "success") {
+      return result.reply();
+    }
+
+    const invoiceId = formData.get("invoiceId");
+    
+    if (!invoiceId) {
+      return {
+        status: 400,
+        error: "Invoice ID is required",
+      };
+    }
+
+    // Update the invoice in the database
+    const updatedInvoice = await prisma.invoice.update({
+      where: {
+        id: invoiceId,
+        userId: session.user?.id, // Ensure user can only edit their own invoices
+      },
+      data: {
+        invoiceName: result.value.invoiceName,
+        invoiceNumber: result.value.invoiceNumber,
+        currency: result.value.currency,
+        fromName: result.value.fromName,
+        fromEmail: result.value.fromEmail,
+        fromAddress: result.value.fromAddress,
+        clientName: result.value.clientName,
+        clientEmail: result.value.clientEmail,
+        clientAddress: result.value.clientAddress,
+        date: result.value.date,
+        dueDate: parseInt(result.value.dueDate),
+        invoiceItemDescription: result.value.invoiceItemDescription,
+        invoiceItemQuantity: parseInt(result.value.invoiceItemQuantity),
+        invoiceItemRate: parseFloat(result.value.invoiceItemRate),
+        total: result.value.total,
+        note: result.value.note,
+      },
+    });
+
+    // Redirect after successful update
+    console.log(updatedInvoice , "check this");
+    
+    return redirect('/dashboard/invoice')
     
   } catch (error) {
-    console.log(error);
+    console.error("Error updating invoice:", error);
+    
+    // Handle Prisma errors 
+    if (error.code === "P2025") {
+      return {
+        status: 404,
+        error: "Invoice not found or you don't have permission to edit it",
+      };
+    }
+    
+    return {
+      status: 500,
+      error: "Failed to update invoice. Please try again.",
+    };
   }
-  
 }
 export async function DeleteInvoice(invoiceId) {
   console.log(invoiceId);

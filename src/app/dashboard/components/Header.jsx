@@ -11,7 +11,7 @@ export default function Header() {
   });
 
   return (
-    <header className="flex items-center w-screen justify-between p-4 bg-gray-100 dark:bg-gray-900 shadow-md">
+    <header className=" items-center hidden w-screen justify-between p-4 bg-gray-100 dark:bg-gray-900 shadow-md">
       <div className="flex items-center space-x-4">
         {/* Sidebar trigger for mobile or collapsible sidebar */}
         <SidebarTrigger />

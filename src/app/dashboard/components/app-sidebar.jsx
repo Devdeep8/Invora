@@ -16,6 +16,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarProvider,
 } from "@/components/ui/sidebar"
 import { NavUser } from "./user-nav"
 import { NavMain } from "./nav-main"
@@ -65,7 +66,9 @@ export  function AppSidebar({ ...props }) {
     : data.user;
 
   return (
-    <Sidebar className=" shadow-xl" variant="inset" {...props}>
+    // <SidebarProvider>
+
+    <Sidebar {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -89,5 +92,6 @@ export  function AppSidebar({ ...props }) {
         <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
+    // </SidebarProvider>
   )
 }

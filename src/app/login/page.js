@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,7 +7,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { auth, signIn } from "../utils/auth";
+import { auth, signIn } from "@/utils/auth";
 import SubmitBtn from "@/hooks/submitBtn";
 import { redirect } from "next/navigation";
 

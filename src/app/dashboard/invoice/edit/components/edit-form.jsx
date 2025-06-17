@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation"; // Add this import
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -26,10 +27,11 @@ import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import SubmitBtn from "@/hooks/submitBtn";
 import { editInvoice } from "@/app/action";
-import { invoiceSchema } from "@/app/utils/zodSchema";
-import { formatCurrency } from "@/app/utils/Format-Currency";
+import { invoiceSchema } from "@/utils/zodSchema";
+import { formatCurrency } from "@/utils/Format-Currency";
 
 export function EditInvoice({ invoice, address, email, firstName, lastName }) {
+  const router = useRouter(); // Add router hook
   const [lastResult, action] = useActionState(editInvoice, undefined);
   const [form, fields] = useForm({
     lastResult,
@@ -50,7 +52,15 @@ export function EditInvoice({ invoice, address, email, firstName, lastName }) {
 
   const calculateTotal = (Number(quantity) || 0) * (Number(rate) || 0);
 
-  return (
+  // Add useEffect to handle successful edit
+  // useEffect(() => {
+  //   if (lastResult.success) {
+  //     // Redirect to dashboard/invoice after successful edit
+  //     router.push("/dashboard/invoice");
+  //   }
+  // }, [lastResult, router]);
+
+  return ( 
     <Card className="w-full max-w-4xl mx-auto">
       <CardContent className="p-6">
         <form id={form.id} action={action} onSubmit={form.onSubmit} noValidate>

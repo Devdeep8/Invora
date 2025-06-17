@@ -10,7 +10,7 @@ import { PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { InvoiceTable } from "./components/InvoiceTable";
 import prisma from "@/lib/prisma";
-import { requireUser } from "@/app/utils/requireUser";
+import { requireUser } from "@/utils/requireUser";
 import { getInvoices } from "@/app/action";
 
 export default async function  InvoicePage() {

@@ -26,8 +26,8 @@ import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import SubmitBtn from "@/hooks/submitBtn";
 import { createInvoice } from "@/app/action";
-import { invoiceSchema } from "@/app/utils/zodSchema";
-import { formatCurrency } from "@/app/utils/Format-Currency";
+import { invoiceSchema } from "@/utils/zodSchema";
+import { formatCurrency } from "@/utils/Format-Currency";
 
 function generateInvoiceNumber() {
   // Generate a random six-digit number as a string. You can update the logic as needed.

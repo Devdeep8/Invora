@@ -98,12 +98,12 @@ export function InvoiceTable({ invoices }) {
 
   const handleUpdate = (invoice) => {
     // Navigate to the edit invoice page
-    router.push(`/invoice/edit/${invoice.id}`);
+    router.push(`/dashboard/invoice/edit/${invoice.id}`);
   };
 
   return (
     <>
-      <Table>
+      <Table className={`w-full`}>
         <TableHeader>
           <TableRow>
             <TableHead>Invoice Number</TableHead>
