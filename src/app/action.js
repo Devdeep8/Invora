@@ -5,7 +5,7 @@ import { requireUser } from "./utils/requireUser";
 import { parseWithZod } from "@conform-to/zod";
 import { invoiceSchema, OnboardingSchema } from "./utils/zodSchema";
 import { redirect } from "next/navigation";
-import nodemailer from "nodemailer"
+import nodemailer from "nodemailer";
 import { addMonths, format } from "date-fns";
 
 export const getRevenueData = async (userId) => {
@@ -67,36 +67,34 @@ export const getInvoices = async (userId) => {
   });
 
   // Compute the amount by multiplying rate and quantity
- 
 
   return invoices;
 };
 
 export async function OnboardUser(prevState, formData) {
-    const session = await requireUser()
+  const session = await requireUser();
 
-    console.log(formData)
-     
-    
-    const submission  = parseWithZod(formData , {
-        schema:OnboardingSchema,
-    })
+  console.log(formData);
 
-    if(submission.status !== "success"){
-        return submission.reply()
-    }
+  const submission = parseWithZod(formData, {
+    schema: OnboardingSchema,
+  });
 
-    const data  = await prisma.user.update({
-        where:{
-            id:session?.user?.id
-        },
-        data:{
-        FirstName : submission.value.fname,
-        LastName : submission.value.lname,
-        address : submission.value.address,
-        }
-    })
-    return redirect("/dashboard")
+  if (submission.status !== "success") {
+    return submission.reply();
+  }
+
+  const data = await prisma.user.update({
+    where: {
+      id: session?.user?.id,
+    },
+    data: {
+      FirstName: submission.value.fname,
+      LastName: submission.value.lname,
+      address: submission.value.address,
+    },
+  });
+  return redirect("/dashboard");
 }
 export async function createInvoice(prevState, formData) {
   const session = await requireUser();
@@ -192,41 +190,61 @@ export async function createInvoice(prevState, formData) {
   return redirect("/dashboard/invoice");
 }
 export async function editInvoice(prevState, formData) {
+  const session = await requireUser();
+
+  if (!session) {
+    return {
+      status: 401,
+      error: "Unauthorized",
+    };
+  }
+
+  try {
+    const updateInvoice = parseWithZod(formData, {
+    schema: invoiceSchema,
+  });
+
+  const updatedInvoice = await prisma.invoice.updateMany({
+    where: {
+      id: formData.id,
+    },
+    data: updateInvoice,  
+  })
+  return {success : true  , updatedInvoice}
+    
+  } catch (error) {
+    console.log(error);
+  }
+  
 }
 export async function DeleteInvoice(invoiceId) {
-
-  console.log(invoiceId)
+  console.log(invoiceId);
   const result = await prisma.invoice.delete({
     where: {
-      id: invoiceId
-    }
-  })
-  return result
+      id: invoiceId,
+    },
+  });
+  return result;
 }
 export async function MarkAsPaidAction(invoiceId) {
-     
-  console.log(invoiceId)
+  console.log(invoiceId);
 
-
-
- const result = await prisma.invoice.update({
-    where:{
-      id:invoiceId
+  const result = await prisma.invoice.update({
+    where: {
+      id: invoiceId,
     },
-    data:{
-      status:"PAID"
-    }
-  })
+    data: {
+      status: "PAID",
+    },
+  });
 
   return result;
-
-} 
-
+}
 
 export async function ReminderOfInvoice(invoiceId) {
   // Validate invoiceId
-  if (!invoiceId || typeof invoiceId !== 'string' || invoiceId.trim() === '') {
-    console.error('Error: Invalid or missing invoiceId');
+  if (!invoiceId || typeof invoiceId !== "string" || invoiceId.trim() === "") {
+    console.error("Error: Invalid or missing invoiceId");
     return;
   }
 
@@ -246,16 +264,16 @@ export async function ReminderOfInvoice(invoiceId) {
       invoiceItemDescription: true,
       invoiceItemQuantity: true,
       invoiceItemRate: true,
-      date: true,           // the invoice issue date
+      date: true, // the invoice issue date
       fromName: true,
       fromEmail: true,
       fromAddress: true,
-      currency: true,       // Optional: currency code
+      currency: true, // Optional: currency code
     },
   });
 
   if (!invoice) {
-    console.error('Invoice not found');
+    console.error("Invoice not found");
     return;
   }
 
@@ -269,8 +287,12 @@ export async function ReminderOfInvoice(invoiceId) {
   const emailBody = `
 Dear ${invoice.clientName},
 
-This is a reminder regarding your invoice (Invoice #${invoice.invoiceNumber} – ${invoice.invoiceName}) which is due on ${actualDueDate.toLocaleDateString()}.
-The total amount is ${invoice.total} ${invoice.currency || 'USD'}.
+This is a reminder regarding your invoice (Invoice #${
+    invoice.invoiceNumber
+  } – ${
+    invoice.invoiceName
+  }) which is due on ${actualDueDate.toLocaleDateString()}.
+The total amount is ${invoice.total} ${invoice.currency || "USD"}.
 
 Please arrange your payment accordingly.
 
@@ -304,7 +326,7 @@ Thank you.
     });
     console.log(`Reminder email sent to ${invoice.clientEmail}`);
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error("Error sending email:", error);
   }
 
   // Update the invoice's due date: set it to 5 days from now.
@@ -317,12 +339,13 @@ Thank you.
         // Optionally, update other fields if required.
       },
     });
-    console.log('Invoice due date updated to 5 days from today.');
+    console.log("Invoice due date updated to 5 days from today.");
   } catch (updateError) {
-    console.error('Error updating invoice due date:', updateError);
+    console.error("Error updating invoice due date:", updateError);
   }
 
   // Optionally log that daily email reminders and WhatsApp notifications have been scheduled.
-  console.log('Daily email reminders and WhatsApp notifications scheduled as per system configuration.');
+  console.log(
+    "Daily email reminders and WhatsApp notifications scheduled as per system configuration."
+  );
 }
-

@@ -96,6 +96,11 @@ export function InvoiceTable({ invoices }) {
     }
   };
 
+  const handleUpdate = (invoice) => {
+    // Navigate to the edit invoice page
+    router.push(`/invoice/edit/${invoice.id}`);
+  };
+
   return (
     <>
       <Table>
@@ -145,7 +150,7 @@ export function InvoiceTable({ invoices }) {
                       <Bell className="mr-2 h-4 w-4" />
                       <span>Reminder</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => console.log(`Update ${invoice.id}`)}>
+                    <DropdownMenuItem onClick={() => handleUpdate(invoice)}>
                       <Edit className="mr-2 h-4 w-4" />
                       <span>Update</span>
                     </DropdownMenuItem>
