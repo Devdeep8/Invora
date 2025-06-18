@@ -28,7 +28,7 @@ import { parseWithZod } from "@conform-to/zod";
 import SubmitBtn from "@/hooks/submitBtn";
 import { editInvoice } from "@/app/action";
 import { invoiceSchema } from "@/utils/zodSchema";
-import { formatCurrency } from "@/utils/Format-Currency";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 export function EditInvoice({ invoice, address, email, firstName, lastName }) {
   const router = useRouter(); // Add router hook
@@ -43,6 +43,15 @@ export function EditInvoice({ invoice, address, email, firstName, lastName }) {
     shouldValidate: "onBlur",
     shouldRevalidate: "onInput",
   });
+
+  useEffect(() => {
+  if (lastResult?.success) {
+    router.push("/dashboard/invoice");
+  }
+}, [lastResult, router]);
+
+
+
 
   // Initialize state with existing invoice data
   const [selectedDate, setSelectedDate] = useState(new Date(invoice.date));

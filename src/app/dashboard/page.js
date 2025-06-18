@@ -78,7 +78,7 @@ const Index = async () => {
                 Welcome back, {session?.user?.FirstName} {session?.user?.LastName}
               </h1>
               <p className="text-primary-foreground/80">
-                Here's an overview of your business performance
+                Here&apos;s an overview of your business performance
               </p>
             </div>
             <div className="mt-4 md:mt-0">

@@ -1,27 +1,31 @@
-/**
- * Format a number as currency
- * @param {number} amount - The amount to format
- * @param {string} currency - The currency code (default: "INR")
- * @returns {string} Formatted currency string
- */
 export const formatCurrency = (amount, currency = "INR") => {
-  // Format the number with commas for thousands separator
+  const num = Number(amount);
+  const safeAmount = isNaN(num) ? 0 : num;
+  const isNegative = safeAmount < 0;
+  const absoluteAmount = Math.abs(safeAmount);
+
   const formattedNumber = new Intl.NumberFormat("en-IN", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(amount);
-  
-  // Add the appropriate currency symbol
+  }).format(absoluteAmount);
+
+  let symbol = '';
   switch (currency) {
     case "INR":
-      return `₹ ${formattedNumber}`; // Unicode rupee symbol
+      symbol = '₹';
+      break;
     case "USD":
-      return `$ ${formattedNumber}`;
+      symbol = '$';
+      break;
     case "EUR":
-      return `€ ${formattedNumber}`;
+      symbol = '€';
+      break;
     case "GBP":
-      return `£ ${formattedNumber}`;
+      symbol = '£';
+      break;
     default:
-      return `${currency} ${formattedNumber}`;
+      symbol = currency;
   }
+
+  return `${isNegative ? '-' : ''}${symbol}${formattedNumber}`;
 };

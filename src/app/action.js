@@ -247,7 +247,7 @@ export async function editInvoice(prevState, formData) {
     // Redirect after successful update
     console.log(updatedInvoice , "check this");
     
-    return redirect('/dashboard/invoice')
+    return {success : true , data : updatedInvoice}
     
   } catch (error) {
     console.error("Error updating invoice:", error);

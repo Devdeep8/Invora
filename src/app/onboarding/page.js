@@ -13,7 +13,7 @@ import { useActionState } from "react";
 import { OnboardUser } from "../action";
 import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { OnboardingSchema } from "../utils/zodSchema";
+import { OnboardingSchema } from "@/utils/zodSchema";
 
 export default function Onboarding() {
   const [lastResult, action] = useActionState(OnboardUser);

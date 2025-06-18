@@ -27,7 +27,7 @@ import { parseWithZod } from "@conform-to/zod";
 import SubmitBtn from "@/hooks/submitBtn";
 import { createInvoice } from "@/app/action";
 import { invoiceSchema } from "@/utils/zodSchema";
-import { formatCurrency } from "@/utils/Format-Currency";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 function generateInvoiceNumber() {
   // Generate a random six-digit number as a string. You can update the logic as needed.
