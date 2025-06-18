@@ -27,21 +27,21 @@ export default async function DashboardLayout({ children }) {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen  relative">
-        {/* Background glow effects */}
-
-        {/* Main layout */}
-        <div className="relative z-10 flex flex-col min-h-screen">
+      <div className="min-h-screen w-full flex">
+        {/* Sidebar */}
+        <AppSidebar />
+        
+        {/* Main content area */}
+        <div className="flex-1 flex flex-col min-h-screen w-full">
           {/* Header */}
           <Header user={session.user} />
-
-          {/* Sidebar and main content */}
-          <div className="flex flex-1">
-            <AppSidebar />
-            <main className="flex-1 w-full p-6 overflow-auto transition-all duration-300">
+          
+          {/* Main content */}
+          <main className="flex-1 w-full overflow-auto">
+            <div className="w-full h-full">
               {children}
-            </main>
-          </div>
+            </div>
+          </main>
         </div>
 
         <Toaster position="top-right" expand={false} />

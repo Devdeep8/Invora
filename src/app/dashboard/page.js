@@ -68,11 +68,11 @@ const Index = async () => {
   ]);
 
   return (  
-    <div className=" bg-background">
+    <div className="w-full min-h-full bg-background">
       {/* Header with theme-aware styling */}
-      <div className="bg-primary text-primary-foreground">
-        <div className=" mx-auto p-6">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center py-4">
+      <div className="bg-primary text-primary-foreground w-full">
+        <div className="w-full px-6 py-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
             <div>
               <h1 className="text-3xl font-bold mb-1">
                 Welcome back, {session?.user?.FirstName} {session?.user?.LastName}
@@ -95,9 +95,9 @@ const Index = async () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="w-full px-6 py-8">
         {/* Stats Cards with theme-aware styling */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 w-full">
           <div className="transform transition-all duration-300 hover:scale-105">
             <StatCard 
               title="Total Invoiced" 
@@ -131,7 +131,7 @@ const Index = async () => {
         </div>
 
         {/* Charts Section with theme-aware styling */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 w-full">
           {/* Revenue Trends Card */}
           <Card className="lg:col-span-2 overflow-hidden shadow-md">
             <div className="bg-muted px-6 py-4 border-b border-border">
@@ -156,7 +156,7 @@ const Index = async () => {
         </div>
 
         {/* Recent Invoices Section */}
-        <Card className="overflow-hidden shadow-md mb-8">
+        <Card className="overflow-hidden shadow-md mb-8 w-full">
           <div className="bg-muted px-6 py-4 border-b border-border">
             <h2 className="text-xl font-bold text-foreground">Recent Invoices</h2>
             <p className="text-sm text-muted-foreground">Your latest invoice activity</p>

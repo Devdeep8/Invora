@@ -103,7 +103,8 @@ export function InvoiceTable({ invoices }) {
 
   return (
     <>
-      <Table className={`w-full`}>
+    <div className="  overflow-x-auto">
+      <Table className=" min-w-full">
         <TableHeader>
           <TableRow>
             <TableHead>Invoice Number</TableHead>
@@ -170,6 +171,7 @@ export function InvoiceTable({ invoices }) {
           ))}
         </TableBody>
       </Table>
+    </div>
 
       {/* Confirmation Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

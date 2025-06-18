@@ -17,7 +17,7 @@ export default async function  InvoicePage() {
   const session = await requireUser();
   const invoices = await getInvoices(session?.user?.id);
   return (
-    <Card>
+    <Card className={`mx-4`}>
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
@@ -36,7 +36,7 @@ export default async function  InvoicePage() {
           </Link>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className={``}>
       <InvoiceTable invoices={invoices} />
       </CardContent>
     </Card>
