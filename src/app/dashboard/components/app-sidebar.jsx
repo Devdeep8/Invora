@@ -1,12 +1,7 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import {
-  Bot,
-  Command,
-  SquareTerminal,
-} from "lucide-react"
-
+import * as React from 'react'
+import { Bot, Command, SquareTerminal } from 'lucide-react'
 
 import {
   Sidebar,
@@ -17,45 +12,31 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-} from "@/components/ui/sidebar"
-import { NavUser } from "./user-nav"
-import { NavMain } from "./nav-main"
-import { useSession } from "next-auth/react"
-
-
+} from '@/components/ui/sidebar'
+import { NavUser } from './user-nav'
+import { NavMain } from './nav-main'
+import { useSession } from 'next-auth/react'
 
 const data = {
-  
-  
-
   navMain: [
     {
-      title: "Dashboard",
-      url: "/dashboard",
+      title: 'Dashboard',
+      url: '/dashboard',
       icon: SquareTerminal,
       isActive: true,
-      items: [
-        
-      ],
+      items: [],
     },
     {
-      title: "Inovice",
-      url: "/dashboard/invoice",
+      title: 'Inovice',
+      url: '/dashboard/invoice',
       icon: Bot,
-      items: [
-        
-      ],
+      items: [],
     },
-   
-   
   ],
-  
- 
 }
 
-export  function AppSidebar({ ...props }) {
-
-  const { data: session } = useSession();
+export function AppSidebar({ ...props }) {
+  const { data: session } = useSession()
 
   const user = session?.user
     ? {
@@ -63,7 +44,7 @@ export  function AppSidebar({ ...props }) {
         email: session.user.email,
         // Use session.user.image if available; fallback to static avatar.
       }
-    : data.user;
+    : data.user
 
   return (
     // <SidebarProvider>
@@ -72,13 +53,13 @@ export  function AppSidebar({ ...props }) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <a href="#">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <Command className="size-4" />
+            <SidebarMenuButton size='lg' asChild>
+              <a href='#'>
+                <div className='flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground'>
+                  <Command className='size-4' />
                 </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Invora Inc</span>
+                <div className='grid flex-1 text-left text-sm leading-tight'>
+                  <span className='truncate font-semibold'>Invora Inc</span>
                 </div>
               </a>
             </SidebarMenuButton>
@@ -86,7 +67,7 @@ export  function AppSidebar({ ...props }) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-     <NavMain items={data.navMain} />
+        <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />

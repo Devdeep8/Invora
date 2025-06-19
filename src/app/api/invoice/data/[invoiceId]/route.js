@@ -1,9 +1,9 @@
-import prisma from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import prisma from '@/lib/prisma'
+import { NextResponse } from 'next/server'
 
 export async function GET(request, { params }) {
-  const { invoiceId } = params;
-  
+  const { invoiceId } = params
+
   try {
     // Retrieve the invoice data
     const data = await prisma.invoice.findUnique({
@@ -27,15 +27,18 @@ export async function GET(request, { params }) {
         note: true,
         status: true,
       },
-    });
+    })
 
     if (!data) {
-      return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Invoice not found' }, { status: 404 })
     }
 
-    return NextResponse.json(data);
+    return NextResponse.json(data)
   } catch (error) {
-    console.error("Error fetching invoice data:", error);
-    return NextResponse.json({ error: "Failed to fetch invoice data" }, { status: 500 });
+    console.error('Error fetching invoice data:', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch invoice data' },
+      { status: 500 }
+    )
   }
 }

@@ -1,20 +1,20 @@
-import { EditInvoice } from "../components/edit-form";
-import { requireUser } from "@/utils/requireUser";
-import prisma  from "@/lib/prisma";
-import { notFound } from "next/navigation";
+import { EditInvoice } from '../components/edit-form'
+import { requireUser } from '@/utils/requireUser'
+import prisma from '@/lib/prisma'
+import { notFound } from 'next/navigation'
 
 async function getInvoiceData(invoiceId) {
   const invoice = await prisma.invoice.findUnique({
     where: {
       id: invoiceId,
     },
-  });
+  })
 
   if (!invoice) {
-    return notFound();
+    return notFound()
   }
 
-  return invoice;
+  return invoice
 }
 
 async function getUserData(userId) {
@@ -28,27 +28,27 @@ async function getUserData(userId) {
       address: true,
       email: true,
     },
-  });
+  })
 
-  return user;
+  return user
 }
 
 export default async function EditInvoicePage({ params }) {
-  const session = await requireUser();
-  const { invoiceId } = await params;
-  
+  const session = await requireUser()
+  const { invoiceId } = await params
+
   const [invoice, user] = await Promise.all([
     getInvoiceData(invoiceId),
     getUserData(session.user?.id),
-  ]);
+  ])
 
   return (
     <EditInvoice
       invoice={invoice}
-      address={user?.address || ""}
-      email={user?.email || ""}
-      firstName={user?.firstName || ""}
-      lastName={user?.lastName || ""}
+      address={user?.address || ''}
+      email={user?.email || ''}
+      firstName={user?.firstName || ''}
+      lastName={user?.lastName || ''}
     />
-  );
+  )
 }

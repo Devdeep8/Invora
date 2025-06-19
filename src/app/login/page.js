@@ -4,27 +4,26 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { auth, signIn } from "@/utils/auth";
-import SubmitBtn from "@/hooks/submitBtn";
-import { redirect } from "next/navigation";
+} from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { auth, signIn } from '@/utils/auth'
+import SubmitBtn from '@/hooks/submitBtn'
+import { redirect } from 'next/navigation'
 
 export default async function Login() {
-
   const session = await auth()
 
-  if (session?.user){
-    redirect("/dashboard")
+  if (session?.user) {
+    redirect('/dashboard')
   }
 
   return (
     <>
-      <div className=" flex h-screen w-full items-center justify-center px-4">
-        <Card className="max-w-sm ">
-          <CardHeader className=" w-96">
-            <CardTitle className="text-2xl"> Login </CardTitle>
+      <div className=' flex h-screen w-full items-center justify-center px-4'>
+        <Card className='max-w-sm '>
+          <CardHeader className=' w-96'>
+            <CardTitle className='text-2xl'> Login </CardTitle>
 
             <CardDescription>
               enter your email to login in to your account
@@ -32,21 +31,26 @@ export default async function Login() {
           </CardHeader>
           <CardContent>
             <form
-              action={async ( formData ) => {
-                "use server";
-                await signIn("nodemailer" , formData);
+              action={async formData => {
+                'use server'
+                await signIn('nodemailer', formData)
               }}
-              className=" flex flex-col gap-y-4"
+              className=' flex flex-col gap-y-4'
             >
-              <div className=" flex flex-col gap-y-2">
+              <div className=' flex flex-col gap-y-2'>
                 <Label>Email</Label>
-                <Input name="email" type="email" required  placeholder="devdeeppatidar8@gmail.com " />
+                <Input
+                  name='email'
+                  type='email'
+                  required
+                  placeholder='devdeeppatidar8@gmail.com '
+                />
               </div>
-              <SubmitBtn text={"Login"}/>
+              <SubmitBtn text={'Login'} />
             </form>
           </CardContent>
         </Card>
       </div>
     </>
-  );
+  )
 }

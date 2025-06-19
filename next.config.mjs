@@ -4,23 +4,23 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
   },
-  
+
   // Optimize builds
-  
+
   // Output configuration for Docker
   output: 'standalone',
-  
+
   // Environment variables available to the client
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
   },
-  
+
   // Image optimization
   images: {
     domains: ['localhost'],
     formats: ['image/webp', 'image/avif'],
   },
-  
+
   // Headers for security
   async headers() {
     return [
@@ -43,7 +43,7 @@ const nextConfig = {
       },
     ]
   },
-  
+
   // Redirects
   async redirects() {
     return [
@@ -54,7 +54,7 @@ const nextConfig = {
       },
     ]
   },
-  
+
   // Webpack configuration
   webpack: (config, { isServer }) => {
     if (!isServer) {
@@ -65,6 +65,6 @@ const nextConfig = {
     }
     return config
   },
-};
+}
 
-export default nextConfig;
+export default nextConfig

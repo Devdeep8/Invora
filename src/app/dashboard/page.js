@@ -1,17 +1,17 @@
-import { RevenueChart } from "./components/RevenueChart";
-import { StatusDonut } from "./components/StatusDonut";
-import { requireUser } from "@/utils/requireUser";
-import prisma from "@/lib/prisma";
-import { Card, CardContent } from "@/components/ui/card";
-import { StatCard } from "./components/StatCard";
-import { addMonths, format, startOfMonth } from "date-fns";
-import { getInvoices, getRevenueData } from "../action";
-import { InvoiceTable } from "./invoice/components/InvoiceTable";
+import { RevenueChart } from './components/RevenueChart'
+import { StatusDonut } from './components/StatusDonut'
+import { requireUser } from '@/utils/requireUser'
+import prisma from '@/lib/prisma'
+import { Card, CardContent } from '@/components/ui/card'
+import { StatCard } from './components/StatCard'
+import { addMonths, format, startOfMonth } from 'date-fns'
+import { getInvoices, getRevenueData } from '../action'
+import { InvoiceTable } from './invoice/components/InvoiceTable'
 
 // 🧠 Fetch Stats: Total Invoiced, Paid, Pending, This Month
-const getDashboardStats = async (userId) => {
-  const now = new Date();
-  const startOfThisMonth = startOfMonth(now);
+const getDashboardStats = async userId => {
+  const now = new Date()
+  const startOfThisMonth = startOfMonth(now)
 
   const [all, paid, pending, thisMonth] = await Promise.all([
     prisma.invoice.aggregate({
@@ -20,74 +20,75 @@ const getDashboardStats = async (userId) => {
     }),
     prisma.invoice.aggregate({
       _sum: { total: true },
-      where: { userId, status: "PAID" },
+      where: { userId, status: 'PAID' },
     }),
     prisma.invoice.count({
-      where: { userId, status: "PENDING" },
+      where: { userId, status: 'PENDING' },
     }),
     prisma.invoice.count({
       where: { userId, date: { gte: startOfThisMonth } },
     }),
-  ]);
+  ])
 
   return {
     totalInvoiced: all._sum.total || 0,
     totalPaid: paid._sum.total || 0,
     pendingCount: pending || 0,
     thisMonthCount: thisMonth || 0,
-  };
-};
+  }
+}
 
 // 🍩 Invoice Status Donut
-const getInvoiceStatusDonutData = async (userId) => {
-  const statuses = ["PAID", "PENDING", "DUE", "DRAFT"];
+const getInvoiceStatusDonutData = async userId => {
+  const statuses = ['PAID', 'PENDING', 'DUE', 'DRAFT']
 
   const invoices = await prisma.invoice.groupBy({
-    by: ["status"],
+    by: ['status'],
     where: { userId },
     _count: true,
-  });
+  })
 
-  const statusMap = Object.fromEntries(invoices.map(i => [i.status, i._count]));
+  const statusMap = Object.fromEntries(invoices.map(i => [i.status, i._count]))
 
   return statuses.map(status => ({
     name: status.charAt(0) + status.slice(1).toLowerCase(),
     value: statusMap[status] || 0,
-  }));
-};
+  }))
+}
 
 const Index = async () => {
-  const session = await requireUser();
-  const userId = session?.user?.id;
+  const session = await requireUser()
+  const userId = session?.user?.id
 
   const [stats, revenueData, statusData, invoices] = await Promise.all([
     getDashboardStats(userId),
     getRevenueData(userId),
     getInvoiceStatusDonutData(userId),
     getInvoices(userId),
-  ]);
+  ])
 
-  return (  
-    <div className="w-full min-h-full bg-background">
+  return (
+    <div className='w-full min-h-full bg-background'>
       {/* Header with theme-aware styling */}
-      <div className="bg-primary text-primary-foreground w-full">
-        <div className="w-full px-6 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+      <div className='bg-primary text-primary-foreground w-full'>
+        <div className='w-full px-6 py-6'>
+          <div className='flex flex-col md:flex-row justify-between items-start md:items-center'>
             <div>
-              <h1 className="text-3xl font-bold mb-1">
-                Welcome back, {session?.user?.FirstName} {session?.user?.LastName}
+              <h1 className='text-3xl font-bold mb-1'>
+                Welcome back, {session?.user?.FirstName}{' '}
+                {session?.user?.LastName}
               </h1>
-              <p className="text-primary-foreground/80">
+              <p className='text-primary-foreground/80'>
                 Here&apos;s an overview of your business performance
               </p>
             </div>
-            <div className="mt-4 md:mt-0">
-              <div className="text-sm text-primary-foreground/80">
-                {new Date().toLocaleDateString('en-US', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
+            <div className='mt-4 md:mt-0'>
+              <div className='text-sm text-primary-foreground/80'>
+                {new Date().toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
                 })}
               </div>
             </div>
@@ -95,79 +96,91 @@ const Index = async () => {
         </div>
       </div>
 
-      <div className="w-full px-6 py-8">
+      <div className='w-full px-6 py-8'>
         {/* Stats Cards with theme-aware styling */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 w-full">
-          <div className="transform transition-all duration-300 hover:scale-105">
-            <StatCard 
-              title="Total Invoiced" 
-              value={stats.totalInvoiced} 
-              isCurrency 
-              type="invoiced"
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 w-full'>
+          <div className='transform transition-all duration-300 hover:scale-105'>
+            <StatCard
+              title='Total Invoiced'
+              value={stats.totalInvoiced}
+              isCurrency
+              type='invoiced'
             />
           </div>
-          <div className="transform transition-all duration-300 hover:scale-105">
-            <StatCard 
-              title="Total Paid" 
-              value={stats.totalPaid} 
-              isCurrency 
-              type="paid"
+          <div className='transform transition-all duration-300 hover:scale-105'>
+            <StatCard
+              title='Total Paid'
+              value={stats.totalPaid}
+              isCurrency
+              type='paid'
             />
           </div>
-          <div className="transform transition-all duration-300 hover:scale-105">
-            <StatCard 
-              title="Pending Invoices" 
+          <div className='transform transition-all duration-300 hover:scale-105'>
+            <StatCard
+              title='Pending Invoices'
               value={stats.pendingCount}
-              type="pending" 
+              type='pending'
             />
           </div>
-          <div className="transform transition-all duration-300 hover:scale-105">
-            <StatCard 
-              title="Invoices This Month" 
+          <div className='transform transition-all duration-300 hover:scale-105'>
+            <StatCard
+              title='Invoices This Month'
               value={stats.thisMonthCount}
-              type="month" 
+              type='month'
             />
           </div>
         </div>
 
         {/* Charts Section with theme-aware styling */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 w-full">
+        <div className='grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 w-full'>
           {/* Revenue Trends Card */}
-          <Card className="lg:col-span-2 overflow-hidden shadow-md">
-            <div className="bg-muted px-6 py-4 border-b border-border">
-              <h2 className="text-xl font-bold text-foreground">Revenue Trends</h2>
-              <p className="text-sm text-muted-foreground">Monthly revenue analysis</p>
+          <Card className='lg:col-span-2 overflow-hidden shadow-md'>
+            <div className='bg-muted px-6 py-4 border-b border-border'>
+              <h2 className='text-xl font-bold text-foreground'>
+                Revenue Trends
+              </h2>
+              <p className='text-sm text-muted-foreground'>
+                Monthly revenue analysis
+              </p>
             </div>
-            <CardContent className="p-6">
+            <CardContent className='p-6'>
               <RevenueChart data={revenueData} />
             </CardContent>
           </Card>
 
           {/* Status Breakdown Card */}
-          <Card className="overflow-hidden shadow-md">
-            <div className="bg-muted px-6 py-4 border-b border-border">
-              <h2 className="text-xl font-bold text-foreground">Status Breakdown</h2>
-              <p className="text-sm text-muted-foreground">Invoice status distribution</p>
+          <Card className='overflow-hidden shadow-md'>
+            <div className='bg-muted px-6 py-4 border-b border-border'>
+              <h2 className='text-xl font-bold text-foreground'>
+                Status Breakdown
+              </h2>
+              <p className='text-sm text-muted-foreground'>
+                Invoice status distribution
+              </p>
             </div>
-            <CardContent className="p-6">
+            <CardContent className='p-6'>
               <StatusDonut data={statusData} />
             </CardContent>
           </Card>
         </div>
 
         {/* Recent Invoices Section */}
-        <Card className="overflow-hidden shadow-md mb-8 w-full">
-          <div className="bg-muted px-6 py-4 border-b border-border">
-            <h2 className="text-xl font-bold text-foreground">Recent Invoices</h2>
-            <p className="text-sm text-muted-foreground">Your latest invoice activity</p>
+        <Card className='overflow-hidden shadow-md mb-8 w-full'>
+          <div className='bg-muted px-6 py-4 border-b border-border'>
+            <h2 className='text-xl font-bold text-foreground'>
+              Recent Invoices
+            </h2>
+            <p className='text-sm text-muted-foreground'>
+              Your latest invoice activity
+            </p>
           </div>
-          <CardContent className="p-6">
+          <CardContent className='p-6'>
             <InvoiceTable invoices={invoices} />
           </CardContent>
         </Card>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Index;
+export default Index

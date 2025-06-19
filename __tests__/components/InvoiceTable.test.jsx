@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import * as nextNavigation from 'next/navigation'
-import {InvoiceTable} from '../../src/app/dashboard/invoice/components/InvoiceTable'
+import { InvoiceTable } from '../../src/app/dashboard/invoice/components/InvoiceTable'
 
 // Mock the delete action
 jest.mock('../../src/app/action', () => ({
@@ -32,8 +32,7 @@ const sampleInvoices = [
     status: 'PENDING',
     date: '2024-01-20T00:00:00Z',
   },
-];
-
+]
 
 describe('InvoiceTable', () => {
   beforeEach(() => {
@@ -55,20 +54,18 @@ describe('InvoiceTable', () => {
     expect(screen.getByText('No invoices found.')).toBeInTheDocument()
   })
 
+  it('displays correct status styling', () => {
+    render(<InvoiceTable invoices={sampleInvoices} />)
 
+    const paidStatus = screen.getByTestId('status-paid')
+    const pendingStatus = screen.getByTestId('status-pending')
 
- it('displays correct status styling', () => {
-  render(<InvoiceTable invoices={sampleInvoices} />)
+    expect(paidStatus).toBeInTheDocument()
+    expect(pendingStatus).toBeInTheDocument()
 
-  const paidStatus = screen.getByTestId('status-paid')
-  const pendingStatus = screen.getByTestId('status-pending')
-
-  expect(paidStatus).toBeInTheDocument()
-  expect(pendingStatus).toBeInTheDocument()
-
-  // Optional: if your Badge component applies styles you control,
-  // test classNames or snapshot styles here.
-})
+    // Optional: if your Badge component applies styles you control,
+    // test classNames or snapshot styles here.
+  })
 
   it('formats currency correctly', () => {
     render(<InvoiceTable invoices={sampleInvoices} />)

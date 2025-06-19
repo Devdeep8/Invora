@@ -1,12 +1,12 @@
-"use client";
+'use client'
 
-import { ChevronRight } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { ChevronRight } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+} from '@/components/ui/collapsible'
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -17,20 +17,20 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "@/components/ui/sidebar";
+} from '@/components/ui/sidebar'
 
 export function NavMain({ items }) {
-  const pathname = usePathname();
+  const pathname = usePathname()
 
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => {
+        {items.map(item => {
           // Determine if the main item or any of its sub-items is active
           const isActive =
             pathname === item.url ||
-            (item.items && item.items.some((sub) => pathname === sub.url));
+            (item.items && item.items.some(sub => pathname === sub.url))
 
           return (
             <Collapsible
@@ -39,13 +39,13 @@ export function NavMain({ items }) {
               defaultOpen={isActive || item.isActive}
             >
               <SidebarMenuItem
-                className={`${isActive ? "bg-primary text-primary-foreground rounded-md" : ""}`}
+                className={`${isActive ? 'bg-primary text-primary-foreground rounded-md' : ''}`}
               >
                 <SidebarMenuButton asChild tooltip={item.title}>
                   <a
                     href={item.url}
                     className={`flex items-center gap-2 ${
-                      isActive ? "font-bold" : ""
+                      isActive ? 'font-bold' : ''
                     }`}
                   >
                     <item.icon />
@@ -55,36 +55,36 @@ export function NavMain({ items }) {
                 {item.items?.length ? (
                   <>
                     <CollapsibleTrigger asChild>
-                      <SidebarMenuAction className="data-[state=open]:rotate-90">
+                      <SidebarMenuAction className='data-[state=open]:rotate-90'>
                         <ChevronRight />
-                        <span className="sr-only">Toggle</span>
+                        <span className='sr-only'>Toggle</span>
                       </SidebarMenuAction>
                     </CollapsibleTrigger>
                     <CollapsibleContent>
                       <SidebarMenuSub>
-                        {item.items.map((subItem) => {
-                          const subActive = pathname === subItem.url;
+                        {item.items.map(subItem => {
+                          const subActive = pathname === subItem.url
                           return (
                             <SidebarMenuSubItem
                               key={subItem.title}
                               className={`${
                                 subActive
-                                  ? "bg-primary text-primary-foreground"
-                                  : ""
+                                  ? 'bg-primary text-primary-foreground'
+                                  : ''
                               }`}
                             >
                               <SidebarMenuSubButton asChild>
                                 <a
                                   href={subItem.url}
                                   className={`flex items-center gap-2 ${
-                                    subActive ? "font-bold" : ""
+                                    subActive ? 'font-bold' : ''
                                   }`}
                                 >
                                   <span>{subItem.title}</span>
                                 </a>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
-                          );
+                          )
                         })}
                       </SidebarMenuSub>
                     </CollapsibleContent>
@@ -92,9 +92,9 @@ export function NavMain({ items }) {
                 ) : null}
               </SidebarMenuItem>
             </Collapsible>
-          );
+          )
         })}
       </SidebarMenu>
     </SidebarGroup>
-  );
+  )
 }

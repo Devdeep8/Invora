@@ -1,31 +1,31 @@
-export const formatCurrency = (amount, currency = "INR") => {
-  const num = Number(amount);
-  const safeAmount = isNaN(num) ? 0 : num;
-  const isNegative = safeAmount < 0;
-  const absoluteAmount = Math.abs(safeAmount);
+export const formatCurrency = (amount, currency = 'INR') => {
+  const num = Number(amount)
+  const safeAmount = isNaN(num) ? 0 : num
+  const isNegative = safeAmount < 0
+  const absoluteAmount = Math.abs(safeAmount)
 
-  const formattedNumber = new Intl.NumberFormat("en-IN", {
+  const formattedNumber = new Intl.NumberFormat('en-IN', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(absoluteAmount);
+  }).format(absoluteAmount)
 
-  let symbol = '';
+  let symbol = ''
   switch (currency) {
-    case "INR":
-      symbol = '₹';
-      break;
-    case "USD":
-      symbol = '$';
-      break;
-    case "EUR":
-      symbol = '€';
-      break;
-    case "GBP":
-      symbol = '£';
-      break;
+    case 'INR':
+      symbol = '₹'
+      break
+    case 'USD':
+      symbol = '$'
+      break
+    case 'EUR':
+      symbol = '€'
+      break
+    case 'GBP':
+      symbol = '£'
+      break
     default:
-      symbol = currency;
+      symbol = currency
   }
 
-  return `${isNegative ? '-' : ''}${symbol}${formattedNumber}`;
-};
+  return `${isNegative ? '-' : ''}${symbol}${formattedNumber}`
+}

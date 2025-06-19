@@ -1,6 +1,6 @@
-import { 
-  invoiceSchema as InvoiceSchema, 
-  OnboardingSchema as onboardingSchema 
+import {
+  invoiceSchema as InvoiceSchema,
+  OnboardingSchema as onboardingSchema,
 } from '../../src/utils/zodSchema'
 
 describe('Zod Schemas Validation', () => {
@@ -10,8 +10,8 @@ describe('Zod Schemas Validation', () => {
         invoiceName: 'Website Design',
         total: 100,
         status: 'PAID',
-        date: new Date().toISOString(),         // must be string
-        dueDate: 30,                             // must be number
+        date: new Date().toISOString(), // must be string
+        dueDate: 30, // must be number
         fromName: 'Company Inc',
         fromEmail: 'company@example.com',
         fromAddress: '456 Business Ave',
@@ -19,11 +19,11 @@ describe('Zod Schemas Validation', () => {
         clientEmail: 'john@example.com',
         clientAddress: '123 Main St',
         currency: 'USD',
-        invoiceNumber: 1,                        // must be number
+        invoiceNumber: 1, // must be number
         note: 'Thanks for your business',
         invoiceItemDescription: 'Design work',
         invoiceItemQuantity: 1,
-        invoiceItemRate: 100
+        invoiceItemRate: 100,
       }
 
       const result = InvoiceSchema.safeParse(validInvoice)
@@ -47,15 +47,19 @@ describe('Zod Schemas Validation', () => {
         invoiceNumber: 1,
         invoiceItemDescription: 'Design work',
         invoiceItemQuantity: 1,
-        invoiceItemRate: 100
+        invoiceItemRate: 100,
       }
 
       const result = InvoiceSchema.safeParse(invalidInvoice)
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.issues.some(issue =>
-          issue.path.includes('fromEmail') && issue.code === 'invalid_string'
-        )).toBe(true)
+        expect(
+          result.error.issues.some(
+            issue =>
+              issue.path.includes('fromEmail') &&
+              issue.code === 'invalid_string'
+          )
+        ).toBe(true)
       }
     })
 
@@ -66,28 +70,37 @@ describe('Zod Schemas Validation', () => {
       expect(result.success).toBe(false)
       if (!result.success) {
         const requiredFields = [
-          'invoiceName', 'total', 'date', 'dueDate',
-          'fromName', 'fromEmail', 'fromAddress',
-          'clientName', 'clientEmail', 'clientAddress',
-          'currency', 'invoiceNumber',
-          'invoiceItemDescription', 'invoiceItemQuantity', 'invoiceItemRate'
+          'invoiceName',
+          'total',
+          'date',
+          'dueDate',
+          'fromName',
+          'fromEmail',
+          'fromAddress',
+          'clientName',
+          'clientEmail',
+          'clientAddress',
+          'currency',
+          'invoiceNumber',
+          'invoiceItemDescription',
+          'invoiceItemQuantity',
+          'invoiceItemRate',
         ]
         requiredFields.forEach(field => {
-          expect(result.error.issues.some(issue =>
-            issue.path.includes(field)
-          )).toBe(true)
+          expect(
+            result.error.issues.some(issue => issue.path.includes(field))
+          ).toBe(true)
         })
       }
     })
   })
-
 
   describe('onboardingSchema', () => {
     it('validates correct onboarding data', () => {
       const validOnboarding = {
         fname: 'John',
         lname: 'Doe',
-        address: '123 Main St'
+        address: '123 Main St',
       }
 
       const result = onboardingSchema.safeParse(validOnboarding)
@@ -98,7 +111,7 @@ describe('Zod Schemas Validation', () => {
       const invalidOnboarding = {
         fname: '',
         lname: '',
-        address: '123 Main St'
+        address: '123 Main St',
       }
 
       const result = onboardingSchema.safeParse(invalidOnboarding)
