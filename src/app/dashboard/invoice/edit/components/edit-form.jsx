@@ -329,10 +329,10 @@ export function EditInvoice({ invoice, address, email, firstName, lastName }) {
               </div>
               <div className='col-span-2'>
                 <Input
-                  value={formatCurrency({
-                    amount: calculateTotal,
-                    currency: currency,
-                  })}
+                  value={formatCurrency(
+                     calculateTotal,
+                    currency,
+                  )}
                   disabled
                 />
               </div>
@@ -344,19 +344,19 @@ export function EditInvoice({ invoice, address, email, firstName, lastName }) {
               <div className='flex justify-between py-2'>
                 <span>Subtotal</span>
                 <span>
-                  {formatCurrency({
-                    amount: calculateTotal,
-                    currency: currency,
-                  })}
+                  {formatCurrency(
+                     calculateTotal,
+                    currency,
+                  )}
                 </span>
               </div>
               <div className='flex justify-between py-2 border-t'>
                 <span>Total ({currency})</span>
                 <span className='font-medium underline underline-offset-2'>
-                  {formatCurrency({
-                    amount: calculateTotal,
-                    currency: currency,
-                  })}
+                  {formatCurrency(
+                     calculateTotal,
+                    currency,
+                  )}
                 </span>
               </div>
             </div>

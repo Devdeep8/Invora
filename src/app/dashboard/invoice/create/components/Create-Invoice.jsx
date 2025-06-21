@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
@@ -63,7 +63,22 @@ export function CreateInvoice({ address, email, firstName, lastName }) {
   // Set default currency to INR
   const [currency, setCurrency] = useState('INR')
 
-  const calcualteTotal = (Number(quantity) || 0) * (Number(rate) || 0)
+  // Fix: Use useMemo to ensure the calculation updates when rate or quantity changes
+  const calculateTotal = useMemo(() => {
+    const numQuantity = Number(quantity) || 0
+    const numRate = Number(rate) || 0
+    return numQuantity * numRate
+  }, [quantity, rate])
+
+  // Initialize form values from fields if they exist
+  useEffect(() => {
+    if (fields.invoiceItemQuantity.initialValue && !quantity) {
+      setQuantity(fields.invoiceItemQuantity.initialValue)
+    }
+    if (fields.invoiceItemRate.initialValue && !rate) {
+      setRate(fields.invoiceItemRate.initialValue)
+    }
+  }, [fields.invoiceItemQuantity.initialValue, fields.invoiceItemRate.initialValue, quantity, rate])
 
   return (
     <Card className='w-full max-w-4xl mx-auto'>
@@ -77,7 +92,17 @@ export function CreateInvoice({ address, email, firstName, lastName }) {
           <input
             type='hidden'
             name={fields.total.name}
-            value={calcualteTotal}
+            value={calculateTotal}
+          />
+          <input
+            type='hidden'
+            name={fields.invoiceItemQuantity.name}
+            value={quantity}
+          />
+          <input
+            type='hidden'
+            name={fields.invoiceItemRate.name}
+            value={rate}
           />
 
           <div className='flex flex-col gap-1 w-fit mb-6'>
@@ -287,8 +312,6 @@ export function CreateInvoice({ address, email, firstName, lastName }) {
               </div>
               <div className='col-span-2'>
                 <Input
-                  name={fields.invoiceItemQuantity.name}
-                  key={fields.invoiceItemQuantity.key}
                   type='number'
                   placeholder='0'
                   value={quantity}
@@ -300,8 +323,6 @@ export function CreateInvoice({ address, email, firstName, lastName }) {
               </div>
               <div className='col-span-2'>
                 <Input
-                  name={fields.invoiceItemRate.name}
-                  key={fields.invoiceItemRate.key}
                   value={rate}
                   onChange={e => setRate(e.target.value)}
                   type='number'
@@ -313,10 +334,10 @@ export function CreateInvoice({ address, email, firstName, lastName }) {
               </div>
               <div className='col-span-2'>
                 <Input
-                  value={formatCurrency({
-                    amount: calcualteTotal,
-                    currency: currency,
-                  })}
+                  value={formatCurrency(
+                  calculateTotal,
+                   currency,
+                  )}
                   disabled
                 />
               </div>
@@ -327,20 +348,21 @@ export function CreateInvoice({ address, email, firstName, lastName }) {
             <div className='w-1/3'>
               <div className='flex justify-between py-2'>
                 <span>Subtotal</span>
+               
                 <span>
-                  {formatCurrency({
-                    amount: calcualteTotal,
-                    currency: currency,
-                  })}
+                  {formatCurrency(
+                     calculateTotal,
+                     currency,
+                  )}
                 </span>
               </div>
               <div className='flex justify-between py-2 border-t'>
                 <span>Total ({currency})</span>
                 <span className='font-medium underline underline-offset-2'>
-                  {formatCurrency({
-                    amount: calcualteTotal,
-                    currency: currency,
-                  })}
+                  {formatCurrency(
+                     calculateTotal,
+                   currency,
+                  )}
                 </span>
               </div>
             </div>
